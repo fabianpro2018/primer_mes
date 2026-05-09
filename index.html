@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Story Day by Day</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Dancing+Script:wght@400;700&family=Inter:wght@300;400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0a0a0a;
+            color: #e5e5e5;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            transition: background 1.2s ease;
+        }
+        .font-serif-elegant { font-family: 'Playfair Display', serif; }
+        .font-cursive { font-family: 'Dancing Script', cursive; }
+        
+        .fade-in { animation: fadeIn 0.8s ease-out forwards; }
+        .fade-out { animation: fadeOut 0.8s ease-out forwards; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fadeOut {
+            from { opacity: 1; transform: translateY(0); }
+            to { opacity: 0; transform: translateY(-10px); }
+        }
+
+        .bg-overlay {
+            background: radial-gradient(circle at center, rgba(30, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.9) 100%);
+        }
+
+        .milestone-glow {
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 0 0 40px rgba(255, 255, 255, 0.2);
+            color: #fff;
+        }
+
+        .btn-advance {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(255, 255, 255, 0.03);
+            backdrop-filter: blur(8px);
+        }
+
+        .btn-advance:hover {
+            background: white;
+            color: black;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+        }
+
+        .heart {
+            position: absolute;
+            color: rgba(255, 255, 255, 0.15);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        #message-text, .letter-content {
+            max-height: 50vh;
+            overflow-y: auto;
+            scrollbar-width: none;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+        }
+        #message-text::-webkit-scrollbar, .letter-content::-webkit-scrollbar { display: none; }
+
+        /* Estilos de la Carta */
+        .letter-container {
+            background: rgba(15, 15, 15, 0.98);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Estilos Video Vertical Optimizado (1080x1920) */
+        .video-container {
+            width: auto;
+            height: 80vh;
+            aspect-ratio: 9 / 16;
+            background: black;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(0,0,0,0.9);
+            position: relative;
+            margin: 0 auto;
+        }
+
+        @media (max-width: 640px) {
+            .video-container {
+                height: auto;
+                width: 90vw;
+            }
+        }
+    </style>
+</head>
+<body class="bg-overlay min-h-screen flex items-center justify-center relative select-none">
+
+    <div id="particles-container"></div>
+
+    <!-- Escena Principal: Timeline -->
+    <div id="timeline-scene" class="z-10 w-full max-w-3xl px-6 text-center">
+        <div id="day-counter" class="text-[10px] uppercase tracking-[0.5em] mb-6 opacity-40 font-light">
+            Loading our story...
+        </div>
+
+        <div id="content-area" class="fade-in">
+            <h1 id="date-display" class="text-5xl md:text-8xl font-serif-elegant mb-10 transition-all duration-700">March 18</h1>
+            
+            <div id="message-container" class="min-h-[160px] flex flex-col items-center justify-center">
+                <p id="message-text" class="text-lg md:text-xl leading-relaxed font-light text-gray-300 italic max-w-2xl px-4">
+                    Starting the journey...
+                </p>
+            </div>
+        </div>
+
+        <div class="mt-16 flex flex-wrap justify-center gap-4">
+            <button id="btn-prev" onclick="previousDay()" class="px-8 py-4 rounded-full btn-advance uppercase tracking-[0.4em] text-[10px] opacity-0 pointer-events-none transition-all duration-300">
+                Go Back
+            </button>
+            <button id="btn-next" onclick="advanceDay()" class="px-12 py-4 rounded-full btn-advance uppercase tracking-[0.4em] text-[10px]">
+                Advance one day
+            </button>
+            <button id="btn-letter" onclick="showLetter()" class="hidden px-12 py-4 rounded-full bg-white text-black uppercase tracking-[0.4em] text-[10px] font-bold transition-all hover:scale-105">
+                Read my letter
+            </button>
+        </div>
+
+        <div id="final-stats" class="mt-12 hidden fade-in">
+            <div class="h-px w-20 bg-white/20 mx-auto mb-6"></div>
+            <p class="text-gray-500 text-[10px] font-light uppercase tracking-[0.3em]">Our First Month • 2026</p>
+        </div>
+    </div>
+
+    <!-- Escena Oculta: La Carta -->
+    <div id="letter-scene" class="hidden fixed inset-0 z-30 flex items-center justify-center p-6 bg-black/80 backdrop-blur-md">
+        <div class="letter-container w-full max-w-2xl p-8 md:p-12 rounded-lg fade-in">
+            <div class="text-left">
+                <h2 class="font-serif-elegant text-3xl mb-8 text-white border-b border-white/10 pb-4 italic">For my Love....</h2>
+                <div class="letter-content text-gray-300 leading-loose font-light text-lg italic pr-4">
+                    <!-- Contenido inyectado por JS -->
+                </div>
+                <div class="mt-10 pt-6 border-t border-white/10 flex flex-wrap justify-between items-center gap-6">
+                    <div>
+                        <p class="font-cursive text-2xl text-white">With Love, me.</p>
+                        <p class="text-[10px] uppercase tracking-widest text-gray-500 mt-1">May 14, 2026</p>
+                    </div>
+                    <div class="flex gap-4">
+                        <button id="btn-watch-video" onclick="showVideo()" class="px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-full text-[10px] uppercase tracking-widest transition-all">
+                            Until I Found You
+                        </button>
+                        <button onclick="hideLetter()" class="text-[10px] uppercase tracking-widest text-gray-500 hover:text-white transition-colors">
+                            Close
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Escena Oculta: El Video (Soporte para Google Drive Direct Link) -->
+    <div id="video-scene" class="hidden fixed inset-0 z-40 flex items-center justify-center p-6 bg-black">
+        <div class="flex flex-col items-center w-full max-w-4xl fade-in">
+            <div class="video-container mb-8">
+                <video id="main-video" controls class="w-full h-full object-contain">
+                    <!-- Enlace directo a Google Drive usando tu ID de archivo -->
+                    <source src="https://drive.google.com/uc?export=download&id=1JHI19POIesHEU60JiPD02rTrCLxmau-x" type="video/mp4">
+                    Your browser does not support the video tag.
+                </video>
+            </div>
+            <button onclick="hideVideo()" class="px-12 py-4 rounded-full btn-advance uppercase tracking-[0.4em] text-[10px]">
+                Back to the story
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const mensajesPersonalizados = {
+            "March 18": "Today I want to tell you about the 'Black Swan Theory'. It describes an event that comes as a total surprise, has a major effect, and is often inappropriately rationalized after the fact. Meeting you was my Black Swan: a rare event with an almost zero probability of happening, yet it changed my entire world. Against all odds, our journey began here. Muchas Gracias Arena Breakout jejeje",
+            "March 19": "Thanks for carrying me, I try to play better but I always make us lose :(",
+            "March 20": "Have you heard me sing yet? Or are your ears still unfamiliar with that torture?",
+            "March 21": "Every time we talk, I discover something new about you. It's like unwrapping a gift that keeps surprising me.",
+            "March 22": "How do you manage to understand me? I feel like my English is terrible. But you always get what I'm trying to say, even when I struggle to find the words.",
+            "March 23": "Now I am your student, you are the best teacher and I am the best student",
+            "March 24": "La vaca lola la vaca lola tiene cabeza y tiene cola y hace muuuuuuuuuuuuuuuuuuu \n Turn up the volume",
+            "March 25": "Soy una serpiente que anda por el bosque buscando una parte de su cola. \n Quiere ser usted una parte de mi cola? \n Turn up the volume",
+            "March 26": "Choose 3 animals you like, but please don't make them too difficult. Remember?",
+            "March 27": "Bartolito era un gallo que vivía muy feliz, cuándo el sol aparecía Bartolito cantaba así: Guau Guau. No bartolito eso es un perro. \n Bartolito era un gallo que vivía muy feliz, cuándo el sol aparecía Bartolito cantaba así: Miau Miau. No bartolito eso es un gato. \n Bartolito era un gallo que vivía muy feliz, cuándo el sol aparecía Bartolito cantaba así: Muuuuu. \n No Bartolito eso es una vaca. Bartolito era un gallo que vivía muy feliz, cuándo el sol aparecía Bartolito cantaba así: Quiquiriquí. Si Bartolito, eso es un gallo. \n Turn up the volume",
+            "March 28": "Tayo, Tayo, Tayo, Tayo, he's a friendly little bus, \n Speeding up, slowing down, Tayo always loves to run \n Tayo, Tayo, Tayo, Tayo, he's a friendly little bus \n Speeding up, slowing down, Tayo's always having fun \n Turn up the volume", 
+            "March 29": "I always have a lot of fun with you, I hope you do too.",
+            "March 30": "We keep playing and I keep making us lose :(, I'm so sorry",
+            "March 31": "It was a lovely karaoke night, you sing beautifully, your poor ears have already gotten used to the torture :)",
+            "April 1": "Muchas gracias. My English is improving; when you have the best teacher, everything is easier.",
+            "April 2": "I've already marked your birthday on my calendar so I don't forget. Happy birthday of the best!",
+            "April 3": "Awwwwwwww you remember when it's my birthday, so cute",
+            "April 4": "Neymar, Real Madrid, Strawberries, killer whale, seashells, Skye, corean dramas, rice and macaroni and other stuff motorcycles, watermelon, tayo tayo, etc. \n I'll try to remember the things you like, it's difficult because my memory doesn't always work :(",
+            "April 5": "Messi, Barcelona, ​​American people, ketchup, tomato, banana, butterfly, avocado, mustard, etc. \n I'll try to remember the things you don't like, it's difficult because my memory doesn't always work :(",
+            "April 6": "I'm going to have to be my sister's chef; I need to learn new recipes. Thanks for teaching me how to make your salad.",
+            "April 7": "I have something to tell you, but I don't know when, whether in a few days, weeks, months, or a year.",
+            "April 8": "I'm excited and afraid to share this with you. Choose a day",
+            "April 9": "I want to tell you something, but I don't know how to say it. I hope you understand me when I do.",
+            "April 10": "I know tomorrow isn't the day yet, but I need to get rid of this burden. It's selfish of me, so I'm really sorry.",
+            "April 11": "The day I finally let my heart speak. Nervous, hopeful, and certain that I didn't want to keep this feeling to myself anymore. I mustered up enough courage and selfishness to tell you how I felt: I liked you, I like you, and I will continue to like you mucho mucho mucho muchisisisisisisisisisisisisisimo. \n Turn up the volume Turn up the volume, but not too much, take care of your ears jejeje",
+            "April 12": "Thank you so much for being sincere and honest with me. I was so scared of rejection, but you accepted me with open arms. I feel like the luckiest man in the world because I found someone as amazing as you.",
+            "April 13": "The eve of our big opening. The sweetest suspense in the world.",
+            "April 14": "The day you said yes. Our official 'Day One'. Thank you for being my most beautiful reality. Thank you for letting me be a part of your life and your story. Thank you for making me happy and letting me try to make you smile and try to make you fall in love with me.",
+            "April 15": "Born too late see the dinosaurs, born too early to see flying cars, but born just in time to meet the most amazing person in the world (YOU).",
+            "April 16": "When you feel sad, remember you have me, okay? I may not be much, but I will always be by your side, trying to make you happy and support you in everything. I want to be your safe place and your refuge",
+            "April 17": "I want to be the reason you smile every day. I want to be the reason you feel loved and appreciated. I want to be the reason you feel special and unique. I want to be the reason you feel happy and fulfilled.",
+            "April 18": "One month since the day I met you, an event as improbable as it was incredible, for which I am incredibly grateful. I guess I used up all my good luck, and you're worth it; I won the lottery.",
+            "April 19": "I met a girl",
+            "April 20": "And she is",
+            "April 21": "Sooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo",
+            "April 22": "Much pretty",
+            "April 23": "And do you want to know?",
+            "April 24": "Who is that girl?",
+            "April 25": "<3<3<3You<3<3<3",
+            "April 26": "I want to see you happy every day, that you can always show your beautiful smile",
+            "April 27": "Your name is my favorite word \n Your voice is my favorite song \n Your eyes my favorite mirror \n Your 'Hm' is my favorite notification \n Your happiness is my favorite prayer \n And somehow \n everything that belongs to you \n  becomes my favorite too",
+            "April 28": "Always remember, I can get tired of everything but not you. Even when I'm tired of everything, all I need is you",
+            "April 29": "You are myyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy",
+            "April 30": "favorite person <3\n favorite notification <3\n favorite reason to smile <3\n favorite part of my day<3",
+            "May 1": "I'm going on a trip, I promise I'll show you how it goes and take pictures of everything I can.",
+            "May 2": "I hope you have a great day, and remember that I will always be here for you, supporting you and trying to make you happy.",
+            "May 3": "Today I went to the beach, rode a horse, had a lot of fun, I sent you lots of photos and videos of everything I did, sorry for the spam",
+            "May 4": "I hope you liked all the photos and videos I sent you, I had a lot of fun taking them and sharing them with you.",
+            "May 5": "just wanna say graciassssssssssssssssssssssssss for being yn my life, you are the best thing that has ever happened to me and I am so grateful to have you by my side and you are sooooo special to me",
+            "May 6": "Maybe I'm not the best person in your life but as long as I can, I will give you all the effort, good treatment, happiness and love you deserve.",
+            "May 7": "I am so lucky to have you in my life, I love youuuuu amor",
+            "May 8": "Sorry Disney my princess is better than all of yours",
+            "May 9": "You're so cute, I mean not just your looks, but yout personality too, the things you say are cute, your voice is cute, your laught is cute, your smile is cute. \n You are so perfect",
+            "May 10": "I just wanted to say:",
+            "May 11": "Thank you for coming into my life",
+            "May 12": "Thank you for making me smile like crazy",
+            "May 13": "Thank you for making me happy",
+            "May 14": "Happy first month! Thirty days feeling like the luckiest man in the world because I found my Black Swan. Here's to many more! \n Muchas gracias for your patience, for understanding me, for putting up with me, for giving me your time. I truly appreciate it."
+        };
+
+        const contenidoCarta = `It seems incredible that today marks our first official month together. I look back to that March 18th when it all began as an improbable event, a true Black Swan that completely changed my world.
+
+I already told you that you're my Black Swan, but there's another word that also describes you: you're my "serendipia" Meeting you was a lucky, precious, and unexpected event.
+
+Everything is fun with you, from our games on Arena Breakout to those karaoke nights where your ears suffer. I love how patiently you've been my English teacher, making every new word an excuse to admire you a little more.
+
+Thank you for accepting me. The 14th was the moment my reality became more beautiful than any dream. Thank you for letting me be a part of your story, for every "Hm" that lights up my screen, and for being my safe haven.
+
+You're my favorite person, my favorite notification, and the most beautiful reason I have to smile every morning. No matter how tired I might be of the world, I'll never get tired of you.
+
+I love you so much, I like you a lot, I'll always try to have my spark to make you smile and cheer you up a little, the goal is to make you fall in love with me kekekeke`;
+
+        const audiosPersonalizados = {
+            "March 24": "Lola.mp3",
+            "March 25": "Serpiente.mp3",
+            "March 27": "Bartolito.mp3",
+            "March 28": "Tayo.mp3",
+            "April 11": "Tu.mp3"
+        };
+
+        let currentAudio = null;
+        const startDate = new Date(2026, 2, 18);
+        const declarationDate = new Date(2026, 3, 11);
+        const officialDate = new Date(2026, 3, 14);
+        const anniversaryDate = new Date(2026, 4, 14);
+
+        let currentDate = new Date(startDate);
+        let dayCount = 1;
+
+        const dateDisplay = document.getElementById('date-display');
+        const messageText = document.getElementById('message-text');
+        const dayCounter = document.getElementById('day-counter');
+        const btnNext = document.getElementById('btn-next');
+        const btnPrev = document.getElementById('btn-prev');
+        const btnLetter = document.getElementById('btn-letter');
+        const contentArea = document.getElementById('content-area');
+        const letterScene = document.getElementById('letter-scene');
+        const videoScene = document.getElementById('video-scene');
+        const mainVideo = document.getElementById('main-video');
+
+        function formatDate(date) {
+            const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+            return `${months[date.getMonth()]} ${date.getDate()}`;
+        }
+
+        function playSoundForDate(dateStr) {
+            const audioUrl = audiosPersonalizados[dateStr];
+            if (audioUrl) {
+                if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
+                currentAudio = new Audio(audioUrl);
+                currentAudio.volume = 0.5;
+                currentAudio.play().catch(e => console.log("Audio blocked:", e));
+            }
+        }
+
+        function advanceDay() {
+            if (currentDate >= anniversaryDate) return;
+            currentDate.setDate(currentDate.getDate() + 1);
+            dayCount++;
+            triggerFade();
+            updateUI();
+        }
+
+        function previousDay() {
+            if (currentDate <= startDate) return;
+            currentDate.setDate(currentDate.getDate() - 1);
+            dayCount--;
+            triggerFade();
+            updateUI();
+        }
+
+        function triggerFade() {
+            contentArea.classList.remove('fade-in');
+            void contentArea.offsetWidth;
+            contentArea.classList.add('fade-in');
+        }
+
+        function updateUI() {
+            const dateStr = formatDate(currentDate);
+            dateDisplay.innerText = dateStr;
+            dayCounter.innerText = `Day ${dayCount} of our history`;
+
+            playSoundForDate(dateStr);
+
+            let finalMessage = mensajesPersonalizados[dateStr];
+            if (!finalMessage) {
+                if (currentDate < declarationDate) {
+                    finalMessage = "Every conversation brought us closer. Discovering your world bit by bit.";
+                } else if (currentDate > declarationDate && currentDate < officialDate) {
+                    finalMessage = "Three days of waiting that felt like centuries, but my heart was at peace because it was you.";
+                } else {
+                    finalMessage = "Living our present, building memories every 24 hours.";
+                }
+            }
+            messageText.innerText = finalMessage;
+
+            if (currentDate > startDate) {
+                btnPrev.classList.remove('opacity-0', 'pointer-events-none');
+            } else {
+                btnPrev.classList.add('opacity-0', 'pointer-events-none');
+            }
+
+            if (currentDate >= declarationDate) {
+                dateDisplay.classList.add('milestone-glow');
+                if (currentDate >= anniversaryDate) {
+                    spawnHearts(45);
+                    btnNext.classList.add('hidden');
+                    btnLetter.classList.remove('hidden');
+                    document.getElementById('final-stats').classList.remove('hidden');
+                } else {
+                    btnNext.classList.remove('hidden');
+                    btnLetter.classList.add('hidden');
+                    document.getElementById('final-stats').classList.add('hidden');
+                    spawnHearts(15);
+                }
+            } else {
+                dateDisplay.classList.remove('milestone-glow');
+            }
+
+            if (currentDate >= officialDate) {
+                document.body.style.background = "radial-gradient(circle at center, rgba(50, 0, 0, 0.6) 0%, rgba(0, 0, 0, 1) 100%)";
+            } else {
+                document.body.style.background = ""; 
+            }
+        }
+
+        function showLetter() {
+            document.querySelector('.letter-content').innerText = contenidoCarta;
+            letterScene.classList.remove('hidden');
+        }
+
+        function hideLetter() {
+            letterScene.classList.add('hidden');
+        }
+
+        function showVideo() {
+            letterScene.classList.add('hidden');
+            videoScene.classList.remove('hidden');
+            if (currentAudio) currentAudio.pause();
+            mainVideo.play().catch(e => console.log("Video blocked:", e));
+        }
+
+        function hideVideo() {
+            videoScene.classList.add('hidden');
+            mainVideo.pause();
+            mainVideo.currentTime = 0;
+        }
+
+        function spawnHearts(count) {
+            const container = document.getElementById('particles-container');
+            for(let i = 0; i < count; i++) {
+                const heart = document.createElement('div');
+                heart.innerHTML = '❤';
+                heart.className = 'heart';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.top = '110vh';
+                heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                heart.style.opacity = Math.random() * 0.4 + 0.1;
+                const duration = Math.random() * 3 + 3;
+                heart.style.transition = `transform ${duration}s linear, opacity ${duration}s ease-out`;
+                container.appendChild(heart);
+                setTimeout(() => {
+                    heart.style.transform = `translateY(-125vh) translateX(${Math.random() * 100 - 50}px) rotate(${Math.random() * 360}deg)`;
+                    heart.style.opacity = '0';
+                }, 100);
+                setTimeout(() => heart.remove(), duration * 1000);
+            }
+        }
+
+        window.onload = updateUI;
+    </script>
+</body>
+</html>
