@@ -2,30 +2,81 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Our Story Day by Day</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Dancing+Script:wght@400;700&family=Inter:wght@300;400&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --bg-color: #0a0a0a;
+            --accent-glow: rgba(255, 255, 255, 0.05);
+        }
+
         body {
-            background-color: #0a0a0a;
+            background-color: var(--bg-color);
             color: #e5e5e5;
             font-family: 'Inter', sans-serif;
             overflow: hidden;
-            transition: background 1.2s ease;
-        }
-        .font-serif-elegant { font-family: 'Playfair Display', serif; }
-        .font-cursive { font-family: 'Dancing Script', cursive; }
-        
-        .fade-in { animation: fadeIn 0.8s ease-out forwards; }
-        
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            height: 100vh;
+            height: 100svh;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
         }
 
         .bg-overlay {
+            position: fixed;
+            inset: 0;
             background: radial-gradient(circle at center, rgba(30, 0, 0, 0.4) 0%, rgba(0, 0, 0, 0.9) 100%);
+            z-index: -1;
+        }
+
+        /* Contenedor principal con flexbox para separar secciones */
+        .app-container {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+            z-index: 10;
+        }
+
+        /* Cabecera: Fecha y contador */
+        header {
+            flex-shrink: 0;
+            text-align: center;
+            padding-bottom: 10px;
+        }
+
+        /* Centro: El mensaje (ahora con scroll independiente) */
+        main {
+            flex-grow: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow-y: auto;
+            margin: 20px 0;
+            scrollbar-width: none; /* Firefox */
+        }
+        main::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+
+        /* Base: Los botones (fijos abajo) */
+        footer {
+            flex-shrink: 0;
+            padding-bottom: env(safe-area-inset-bottom, 20px);
+            text-align: center;
+        }
+
+        .font-serif-elegant { font-family: 'Playfair Display', serif; }
+        .font-cursive { font-family: 'Dancing Script', cursive; }
+        
+        .fade-in { animation: fadeIn 0.6s ease-out forwards; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .milestone-glow {
@@ -35,16 +86,26 @@
 
         .btn-advance {
             transition: all 0.3s ease;
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            background: rgba(255, 255, 255, 0.03);
-            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 9999px;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        .btn-advance:hover {
+        .btn-advance:active {
             background: white;
             color: black;
-            transform: scale(1.05);
-            box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            transform: scale(0.98);
+        }
+
+        /* Corrección para textos largos y strings infinitos */
+        #message-text {
+            width: 100%;
+            word-break: break-all; /* Rompe palabras largas forzosamente */
+            overflow-wrap: break-word;
+            white-space: pre-wrap;
+            text-align: center;
         }
 
         .heart {
@@ -54,136 +115,103 @@
             z-index: 0;
         }
 
-        #message-text, .letter-content {
+        /* Estilos de la Carta y Video */
+        .modal-scene {
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-blur: 10px;
+        }
+        
+        .letter-content {
             max-height: 50vh;
             overflow-y: auto;
-            scrollbar-width: none;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            overflow-wrap: break-word;
-        }
-        #message-text::-webkit-scrollbar, .letter-content::-webkit-scrollbar { display: none; }
-
-        .letter-container {
-            background: rgba(15, 15, 15, 0.98);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            word-break: normal;
         }
 
-        /* Contenedor de Video Vertical Optimizado para YouTube */
-        .video-wrapper {
-            width: 100%;
-            height: 85vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .iframe-container {
-            width: auto;
-            height: 100%;
+        .video-container {
+            width: 90vw;
+            max-width: 320px;
             aspect-ratio: 9 / 16;
-            background: black;
             border-radius: 12px;
             overflow: hidden;
-            box-shadow: 0 0 40px rgba(0,0,0,0.9);
-            position: relative;
-        }
-
-        iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        @media (max-width: 640px) {
-            .iframe-container {
-                height: 80vh;
-                width: calc(80vh * 9 / 16);
-                max-width: 90vw;
-            }
+            box-shadow: 0 0 40px rgba(0,0,0,0.8);
         }
     </style>
 </head>
-<body class="bg-overlay min-h-screen flex items-center justify-center relative select-none">
+<body>
 
+    <div class="bg-overlay"></div>
     <div id="particles-container"></div>
 
-    <!-- Escena Principal: Timeline -->
-    <div id="timeline-scene" class="z-10 w-full max-w-3xl px-6 text-center">
-        <div id="day-counter" class="text-[10px] uppercase tracking-[0.5em] mb-6 opacity-40 font-light">
-            Loading our story...
-        </div>
+    <div class="app-container" id="timeline-scene">
+        <!-- HEADER -->
+        <header>
+            <div id="day-counter" class="text-[9px] uppercase tracking-[0.4em] mb-2 opacity-40 font-light">
+                Loading...
+            </div>
+            <h1 id="date-display" class="text-4xl md:text-7xl font-serif-elegant transition-all duration-700">March 18</h1>
+        </header>
 
-        <div id="content-area" class="fade-in">
-            <h1 id="date-display" class="text-5xl md:text-8xl font-serif-elegant mb-10 transition-all duration-700">March 18</h1>
-            
-            <div id="message-container" class="min-h-[160px] flex flex-col items-center justify-center">
-                <p id="message-text" class="text-lg md:text-xl leading-relaxed font-light text-gray-300 italic max-w-2xl px-4">
-                    Starting the journey...
+        <!-- MAIN MESSAGE -->
+        <main>
+            <div id="message-container" class="fade-in w-full">
+                <p id="message-text" class="text-base md:text-xl leading-relaxed font-light text-gray-300 italic px-2">
+                    ...
                 </p>
             </div>
-        </div>
+        </main>
 
-        <div class="mt-16 flex flex-wrap justify-center gap-4">
-            <button id="btn-prev" onclick="previousDay()" class="px-8 py-4 rounded-full btn-advance uppercase tracking-[0.4em] text-[10px] opacity-0 pointer-events-none transition-all duration-300">
-                Go Back
-            </button>
-            <button id="btn-next" onclick="advanceDay()" class="px-12 py-4 rounded-full btn-advance uppercase tracking-[0.4em] text-[10px]">
-                Advance one day
-            </button>
-            <button id="btn-letter" onclick="showLetter()" class="hidden px-12 py-4 rounded-full bg-white text-black uppercase tracking-[0.4em] text-[10px] font-bold transition-all hover:scale-105">
-                Read my letter
-            </button>
-        </div>
+        <!-- FOOTER BUTTONS -->
+        <footer>
+            <div class="flex flex-col gap-3 items-center">
+                <div class="flex justify-center gap-3 w-full">
+                    <button id="btn-prev" onclick="previousDay()" class="flex-1 max-w-[140px] py-3 btn-advance uppercase tracking-[0.2em] text-[9px] opacity-0 pointer-events-none transition-all duration-300">
+                        Go Back
+                    </button>
+                    <button id="btn-next" onclick="advanceDay()" class="flex-1 max-w-[140px] py-3 btn-advance uppercase tracking-[0.2em] text-[9px]">
+                        Next Day
+                    </button>
+                </div>
+                
+                <button id="btn-letter" onclick="showLetter()" class="hidden w-full max-w-[290px] py-4 bg-white text-black rounded-full uppercase tracking-[0.3em] text-[10px] font-bold transition-all">
+                    Read my letter
+                </button>
 
-        <div id="final-stats" class="mt-12 hidden fade-in">
-            <div class="h-px w-20 bg-white/20 mx-auto mb-6"></div>
-            <p class="text-gray-500 text-[10px] font-light uppercase tracking-[0.3em]">Our First Month • 2026</p>
-        </div>
+                <div id="final-stats" class="mt-4 hidden fade-in">
+                    <div class="h-px w-12 bg-white/20 mx-auto mb-2"></div>
+                    <p class="text-gray-500 text-[8px] font-light uppercase tracking-[0.2em]">Our First Month • 2026</p>
+                </div>
+            </div>
+        </footer>
     </div>
 
-    <!-- Escena Oculta: La Carta -->
-    <div id="letter-scene" class="hidden fixed inset-0 z-30 flex items-center justify-center p-6 bg-black/80 backdrop-blur-md">
-        <div class="letter-container w-full max-w-2xl p-8 md:p-12 rounded-lg fade-in">
-            <div class="text-left">
-                <h2 class="font-serif-elegant text-3xl mb-8 text-white border-b border-white/10 pb-4 italic">For my Love....</h2>
-                <div class="letter-content text-gray-300 leading-loose font-light text-lg italic pr-4">
-                </div>
-                <div class="mt-10 pt-6 border-t border-white/10 flex flex-wrap justify-between items-center gap-6">
+    <!-- ESCENA DE LA CARTA -->
+    <div id="letter-scene" class="hidden fixed inset-0 z-30 flex items-center justify-center p-4 modal-scene">
+        <div class="bg-[#0f0f0f] w-full max-w-lg p-6 md:p-10 rounded-2xl border border-white/5 shadow-2xl fade-in overflow-y-auto max-h-[90vh]">
+            <h2 class="font-serif-elegant text-2xl mb-6 text-white border-b border-white/10 pb-4 italic">For my Love....</h2>
+            <div class="letter-content text-gray-300 leading-relaxed font-light italic text-sm md:text-base mb-8">
+                <!-- Inyectado por JS -->
+            </div>
+            <div class="border-t border-white/10 pt-6 flex flex-col gap-4">
+                <div class="flex justify-between items-end">
                     <div>
-                        <p class="font-cursive text-2xl text-white">With Love, me.</p>
-                        <p class="text-[10px] uppercase tracking-widest text-gray-500 mt-1">May 14, 2026</p>
+                        <p class="font-cursive text-xl text-white">With Love, me.</p>
+                        <p class="text-[8px] uppercase tracking-widest text-gray-500">May 14, 2026</p>
                     </div>
-                    <div class="flex gap-4">
-                        <button id="btn-watch-video" onclick="showVideo()" class="px-6 py-3 bg-white/10 hover:bg-white/20 text-white rounded-full text-[10px] uppercase tracking-widest transition-all">
-                            Until I Found You
-                        </button>
-                        <button onclick="hideLetter()" class="text-[10px] uppercase tracking-widest text-gray-500 hover:text-white transition-colors">
-                            Close
-                        </button>
-                    </div>
+                    <button onclick="hideLetter()" class="text-[9px] uppercase tracking-widest text-gray-500 hover:text-white underline">Close</button>
                 </div>
+                <button onclick="showVideo()" class="w-full py-3 bg-white/5 border border-white/10 text-white rounded-full text-[9px] uppercase tracking-[0.3em]">
+                    Until I Found You
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- Escena Oculta: El Video (YouTube Embed) -->
-    <div id="video-scene" class="hidden fixed inset-0 z-40 flex items-center justify-center p-6 bg-black">
-        <div class="flex flex-col items-center w-full max-w-4xl fade-in">
-            <div class="video-wrapper mb-8">
-                <div class="iframe-container">
-                    <iframe id="video-iframe" 
-                            src="" 
-                            title="YouTube video player" 
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                            allowfullscreen></iframe>
-                </div>
-            </div>
-            <button onclick="hideVideo()" class="px-12 py-4 rounded-full btn-advance uppercase tracking-[0.4em] text-[10px]">
-                Back to the story
-            </button>
+    <!-- ESCENA DEL VIDEO -->
+    <div id="video-scene" class="hidden fixed inset-0 z-40 flex flex-col items-center justify-center bg-black p-4">
+        <div class="video-container mb-6">
+            <iframe id="video-iframe" src="" allow="autoplay; encrypted-media" allowfullscreen class="w-full h-full border-none"></iframe>
         </div>
+        <button onclick="hideVideo()" class="px-10 py-3 btn-advance uppercase tracking-[0.3em] text-[9px]">Back</button>
     </div>
 
     <script>
@@ -261,11 +289,8 @@ You're my favorite person, my favorite notification, and the most beautiful reas
 I love you so much, I like you a lot, I'll always try to have my spark to make you smile and cheer you up a little, the goal is to make you fall in love with me kekekeke`;
 
         const audiosPersonalizados = {
-            "March 24": "Lola.mp3",
-            "March 25": "Serpiente.mp3",
-            "March 27": "Bartolito.mp3",
-            "March 28": "Tayo.mp3",
-            "April 11": "Tu.mp3"
+            "March 24": "Lola.mp3", "March 25": "Serpiente.mp3", "March 27": "Bartolito.mp3",
+            "March 28": "Tayo.mp3", "April 11": "Tu.mp3"
         };
 
         let currentAudio = null;
@@ -283,7 +308,6 @@ I love you so much, I like you a lot, I'll always try to have my spark to make y
         const btnNext = document.getElementById('btn-next');
         const btnPrev = document.getElementById('btn-prev');
         const btnLetter = document.getElementById('btn-letter');
-        const contentArea = document.getElementById('content-area');
         const letterScene = document.getElementById('letter-scene');
         const videoScene = document.getElementById('video-scene');
         const videoIframe = document.getElementById('video-iframe');
@@ -299,7 +323,7 @@ I love you so much, I like you a lot, I'll always try to have my spark to make y
                 if (currentAudio) { currentAudio.pause(); currentAudio.currentTime = 0; }
                 currentAudio = new Audio(audioUrl);
                 currentAudio.volume = 0.5;
-                currentAudio.play().catch(e => console.log("Audio blocked:", e));
+                currentAudio.play().catch(e => console.log("Blocked:", e));
             }
         }
 
@@ -307,7 +331,6 @@ I love you so much, I like you a lot, I'll always try to have my spark to make y
             if (currentDate >= anniversaryDate) return;
             currentDate.setDate(currentDate.getDate() + 1);
             dayCount++;
-            triggerFade();
             updateUI();
         }
 
@@ -315,21 +338,14 @@ I love you so much, I like you a lot, I'll always try to have my spark to make y
             if (currentDate <= startDate) return;
             currentDate.setDate(currentDate.getDate() - 1);
             dayCount--;
-            triggerFade();
             updateUI();
-        }
-
-        function triggerFade() {
-            contentArea.classList.remove('fade-in');
-            void contentArea.offsetWidth;
-            contentArea.classList.add('fade-in');
         }
 
         function updateUI() {
             const dateStr = formatDate(currentDate);
             dateDisplay.innerText = dateStr;
             dayCounter.innerText = `Day ${dayCount} of our history`;
-
+            
             playSoundForDate(dateStr);
 
             let finalMessage = mensajesPersonalizados[dateStr];
@@ -344,33 +360,26 @@ I love you so much, I like you a lot, I'll always try to have my spark to make y
             }
             messageText.innerText = finalMessage;
 
-            if (currentDate > startDate) {
-                btnPrev.classList.remove('opacity-0', 'pointer-events-none');
-            } else {
-                btnPrev.classList.add('opacity-0', 'pointer-events-none');
-            }
+            // Navegación
+            btnPrev.style.opacity = currentDate > startDate ? "1" : "0";
+            btnPrev.style.pointerEvents = currentDate > startDate ? "auto" : "none";
 
+            // Visuales
             if (currentDate >= declarationDate) {
                 dateDisplay.classList.add('milestone-glow');
-                if (currentDate >= anniversaryDate) {
-                    spawnHearts(45);
-                    btnNext.classList.add('hidden');
-                    btnLetter.classList.remove('hidden');
-                    document.getElementById('final-stats').classList.remove('hidden');
-                } else {
-                    btnNext.classList.remove('hidden');
-                    btnLetter.classList.add('hidden');
-                    document.getElementById('final-stats').classList.add('hidden');
-                    spawnHearts(15);
-                }
+                spawnHearts(currentDate >= anniversaryDate ? 20 : 8);
             } else {
                 dateDisplay.classList.remove('milestone-glow');
             }
 
-            if (currentDate >= officialDate) {
-                document.body.style.background = "radial-gradient(circle at center, rgba(50, 0, 0, 0.6) 0%, rgba(0, 0, 0, 1) 100%)";
+            if (currentDate >= anniversaryDate) {
+                btnNext.classList.add('hidden');
+                btnLetter.classList.remove('hidden');
+                document.getElementById('final-stats').classList.remove('hidden');
             } else {
-                document.body.style.background = ""; 
+                btnNext.classList.remove('hidden');
+                btnLetter.classList.add('hidden');
+                document.getElementById('final-stats').classList.add('hidden');
             }
         }
 
@@ -387,10 +396,7 @@ I love you so much, I like you a lot, I'll always try to have my spark to make y
             letterScene.classList.add('hidden');
             videoScene.classList.remove('hidden');
             if (currentAudio) currentAudio.pause();
-            
-            // Reemplazado con el ID proporcionado
-            const youtubeID = "LCGX9-oIfDY"; 
-            videoIframe.src = `https://www.youtube.com/embed/${youtubeID}?autoplay=1&rel=0`;
+            videoIframe.src = `https://www.youtube.com/embed/LCGX9-oIfDY?autoplay=1&rel=0&modestbranding=1`;
         }
 
         function hideVideo() {
@@ -405,17 +411,17 @@ I love you so much, I like you a lot, I'll always try to have my spark to make y
                 heart.innerHTML = '❤';
                 heart.className = 'heart';
                 heart.style.left = Math.random() * 100 + 'vw';
-                heart.style.top = '110vh';
-                heart.style.fontSize = (Math.random() * 20 + 10) + 'px';
-                heart.style.opacity = Math.random() * 0.4 + 0.1;
-                const duration = Math.random() * 3 + 3;
-                heart.style.transition = `transform ${duration}s linear, opacity ${duration}s ease-out`;
+                heart.style.top = '100vh';
+                heart.style.fontSize = (Math.random() * 15 + 10) + 'px';
+                heart.style.opacity = Math.random() * 0.3 + 0.1;
+                const dur = Math.random() * 2 + 3;
+                heart.style.transition = `transform ${dur}s linear, opacity ${dur}s ease-out`;
                 container.appendChild(heart);
                 setTimeout(() => {
-                    heart.style.transform = `translateY(-125vh) translateX(${Math.random() * 100 - 50}px) rotate(${Math.random() * 360}deg)`;
+                    heart.style.transform = `translateY(-110vh) translateX(${Math.random()*100-50}px) rotate(${Math.random()*360}deg)`;
                     heart.style.opacity = '0';
-                }, 100);
-                setTimeout(() => heart.remove(), duration * 1000);
+                }, 50);
+                setTimeout(() => heart.remove(), dur * 1000);
             }
         }
 
