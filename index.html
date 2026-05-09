@@ -31,7 +31,7 @@
             z-index: -1;
         }
 
-        /* Contenedor principal con flexbox para separar secciones */
+        /* Contenedor principal */
         .app-container {
             display: flex;
             flex-direction: column;
@@ -44,29 +44,27 @@
             z-index: 10;
         }
 
-        /* Cabecera: Fecha y contador */
         header {
             flex-shrink: 0;
             text-align: center;
-            padding-bottom: 10px;
+            padding-bottom: 5px;
         }
 
-        /* Centro: El mensaje (ahora con scroll independiente) */
         main {
             flex-grow: 1;
             display: flex;
             align-items: center;
             justify-content: center;
             overflow-y: auto;
-            margin: 10px 0;
-            scrollbar-width: none; /* Firefox */
+            margin: 5px 0;
+            scrollbar-width: none;
+            width: 100%;
         }
-        main::-webkit-scrollbar { display: none; } /* Chrome/Safari */
+        main::-webkit-scrollbar { display: none; }
 
-        /* Base: Los botones (fijos abajo) */
         footer {
             flex-shrink: 0;
-            padding-bottom: env(safe-area-inset-bottom, 20px);
+            padding-bottom: env(safe-area-inset-bottom, 15px);
             text-align: center;
         }
 
@@ -99,14 +97,16 @@
             transform: scale(0.98);
         }
 
-        /* CORRECCIÓN: Salta palabras completas pero maneja strings largos si es necesario */
+        /* CONFIGURACIÓN DEFINITIVA PARA TEXTO EN MÓVIL */
         #message-text {
             width: 100%;
-            overflow-wrap: break-word; /* Salta palabras completas */
-            word-wrap: break-word;
-            word-break: normal; /* No corta palabras a la mitad */
             white-space: pre-wrap;
             text-align: center;
+            word-break: normal; /* Evita romper palabras normales a la mitad */
+            overflow-wrap: break-word; /* Salta la palabra completa a la siguiente línea */
+            hyphens: none; /* Desactiva guiones automáticos */
+            padding: 0 15px;
+            box-sizing: border-box;
         }
 
         .heart {
@@ -116,7 +116,6 @@
             z-index: 0;
         }
 
-        /* Estilos de la Carta y Video */
         .modal-scene {
             background: rgba(0, 0, 0, 0.9);
             backdrop-blur: 10px;
@@ -126,6 +125,7 @@
             max-height: 50vh;
             overflow-y: auto;
             word-break: normal;
+            overflow-wrap: break-word;
         }
 
         .video-container {
@@ -144,7 +144,6 @@
     <div id="particles-container"></div>
 
     <div class="app-container" id="timeline-scene">
-        <!-- HEADER -->
         <header>
             <div id="day-counter" class="text-[9px] uppercase tracking-[0.4em] mb-2 opacity-40 font-light">
                 Loading...
@@ -152,16 +151,14 @@
             <h1 id="date-display" class="text-4xl md:text-7xl font-serif-elegant transition-all duration-700">March 18</h1>
         </header>
 
-        <!-- MAIN MESSAGE -->
         <main>
             <div id="message-container" class="fade-in w-full">
-                <p id="message-text" class="text-base md:text-xl leading-relaxed font-light text-gray-300 italic px-2">
+                <p id="message-text" class="text-base md:text-xl leading-relaxed font-light text-gray-300 italic">
                     ...
                 </p>
             </div>
         </main>
 
-        <!-- FOOTER BUTTONS -->
         <footer>
             <div class="flex flex-col gap-3 items-center">
                 <div class="flex justify-center gap-3 w-full">
@@ -185,13 +182,10 @@
         </footer>
     </div>
 
-    <!-- ESCENA DE LA CARTA -->
     <div id="letter-scene" class="hidden fixed inset-0 z-30 flex items-center justify-center p-4 modal-scene">
         <div class="bg-[#0f0f0f] w-full max-w-lg p-6 md:p-10 rounded-2xl border border-white/5 shadow-2xl fade-in overflow-y-auto max-h-[90vh]">
             <h2 class="font-serif-elegant text-2xl mb-6 text-white border-b border-white/10 pb-4 italic">For my Love....</h2>
-            <div class="letter-content text-gray-300 leading-relaxed font-light italic text-sm md:text-base mb-8">
-                <!-- Inyectado por JS -->
-            </div>
+            <div class="letter-content text-gray-300 leading-relaxed font-light italic text-sm md:text-base mb-8"></div>
             <div class="border-t border-white/10 pt-6 flex flex-col gap-4">
                 <div class="flex justify-between items-end">
                     <div>
@@ -207,7 +201,6 @@
         </div>
     </div>
 
-    <!-- ESCENA DEL VIDEO -->
     <div id="video-scene" class="hidden fixed inset-0 z-40 flex flex-col items-center justify-center bg-black p-4">
         <div class="video-container mb-6">
             <iframe id="video-iframe" src="" allow="autoplay; encrypted-media" allowfullscreen class="w-full h-full border-none"></iframe>
@@ -361,11 +354,9 @@ I love you so much, I like you a lot, I'll always try to have my spark to make y
             }
             messageText.innerText = finalMessage;
 
-            // Navegación
             btnPrev.style.opacity = currentDate > startDate ? "1" : "0";
             btnPrev.style.pointerEvents = currentDate > startDate ? "auto" : "none";
 
-            // Visuales
             if (currentDate >= declarationDate) {
                 dateDisplay.classList.add('milestone-glow');
                 spawnHearts(currentDate >= anniversaryDate ? 20 : 8);
