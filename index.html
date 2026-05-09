@@ -58,7 +58,7 @@
             align-items: center;
             justify-content: center;
             overflow-y: auto;
-            margin: 20px 0;
+            margin: 10px 0;
             scrollbar-width: none; /* Firefox */
         }
         main::-webkit-scrollbar { display: none; } /* Chrome/Safari */
@@ -99,11 +99,12 @@
             transform: scale(0.98);
         }
 
-        /* Corrección para textos largos y strings infinitos */
+        /* CORRECCIÓN: Salta palabras completas pero maneja strings largos si es necesario */
         #message-text {
             width: 100%;
-            word-break: break-all; /* Rompe palabras largas forzosamente */
-            overflow-wrap: break-word;
+            overflow-wrap: break-word; /* Salta palabras completas */
+            word-wrap: break-word;
+            word-break: normal; /* No corta palabras a la mitad */
             white-space: pre-wrap;
             text-align: center;
         }
