@@ -10,6 +10,9 @@
         :root {
             --bg-color: #0a0a0a;
             --accent-glow: rgba(255, 255, 255, 0.05);
+            --flower-color: #ff4d6d;
+            --stem-color: #2d6a4f;
+            --dirt-color: #3d2b1f;
         }
 
         body {
@@ -31,7 +34,6 @@
             z-index: -1;
         }
 
-        /* Contenedor principal */
         .app-container {
             display: flex;
             flex-direction: column;
@@ -53,6 +55,7 @@
         main {
             flex-grow: 1;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             overflow-y: auto;
@@ -97,17 +100,109 @@
             transform: scale(0.98);
         }
 
-        /* CONFIGURACIÓN DEFINITIVA PARA TEXTO EN MÓVIL */
         #message-text {
             width: 100%;
+            overflow-wrap: break-word;
+            word-wrap: break-word;
+            word-break: normal;
             white-space: pre-wrap;
             text-align: center;
-            word-break: normal; /* Evita romper palabras normales a la mitad */
-            overflow-wrap: break-word; /* Salta la palabra completa a la siguiente línea */
-            hyphens: none; /* Desactiva guiones automáticos */
             padding: 0 15px;
-            box-sizing: border-box;
         }
+
+        /* --- ESTILOS DE LA FLOR Y SIEMBRA CORREGIDOS --- */
+        .flower-stage-container {
+            margin-top: 20px;
+            height: 140px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            position: relative;
+            width: 100%;
+        }
+
+        .flower-svg {
+            width: 100px;
+            height: 120px;
+            transition: all 0.8s ease;
+            overflow: visible;
+        }
+
+        .stem {
+            stroke: var(--stem-color);
+            stroke-width: 3;
+            stroke-linecap: round;
+            fill: none;
+            transition: d 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .leaf {
+            fill: var(--stem-color);
+            opacity: 0;
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            transform: scale(0);
+            transform-origin: center;
+        }
+
+        .leaf.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .petal {
+            fill: var(--flower-color);
+            opacity: 0;
+            transition: opacity 1s ease, transform 1s ease;
+            transform: scale(0);
+            transform-origin: center;
+        }
+
+        .petal.visible {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        .planting-hand {
+            position: absolute;
+            top: 0;
+            font-size: 28px;
+            animation: handPlant 2.5s ease-in-out forwards;
+            z-index: 5;
+            pointer-events: none;
+        }
+
+        @keyframes handPlant {
+            0% { transform: translateY(-40px); opacity: 0; }
+            20% { opacity: 1; transform: translateY(0px); }
+            45% { transform: translateY(5px); }
+            50% { transform: translateY(5px); }
+            80% { transform: translateY(5px); opacity: 1; }
+            100% { transform: translateY(-40px); opacity: 0; }
+        }
+
+        /* La semilla ahora cae desde el punto donde está la mano */
+        .seed-anim {
+            animation: seedFall 1.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+            animation-delay: 1.2s; /* Empieza cuando la mano está en posición */
+        }
+
+        @keyframes seedFall {
+            0% { transform: translateY(0px); opacity: 0; }
+            5% { opacity: 1; }
+            100% { transform: translateY(90px); opacity: 1; }
+        }
+
+        .ground-line {
+            stroke: var(--dirt-color);
+            stroke-width: 2;
+            stroke-linecap: round;
+            opacity: 0.6;
+        }
+
+        .bloom-glow {
+            filter: drop-shadow(0 0 10px var(--flower-color));
+        }
+        /* --- FIN ESTILOS FLOR --- */
 
         .heart {
             position: absolute;
@@ -117,24 +212,8 @@
         }
 
         .modal-scene {
-            background: rgba(0, 0, 0, 0.9);
+            background: rgba(0, 0, 0, 0.95);
             backdrop-blur: 10px;
-        }
-        
-        .letter-content {
-            max-height: 50vh;
-            overflow-y: auto;
-            word-break: normal;
-            overflow-wrap: break-word;
-        }
-
-        .video-container {
-            width: 90vw;
-            max-width: 320px;
-            aspect-ratio: 9 / 16;
-            border-radius: 12px;
-            overflow: hidden;
-            box-shadow: 0 0 40px rgba(0,0,0,0.8);
         }
     </style>
 </head>
@@ -152,10 +231,39 @@
         </header>
 
         <main>
-            <div id="message-container" class="fade-in w-full">
+            <div id="message-container" class="fade-in w-full flex flex-col items-center">
                 <p id="message-text" class="text-base md:text-xl leading-relaxed font-light text-gray-300 italic">
                     ...
                 </p>
+
+                <!-- CONTENEDOR DE LA FLOR -->
+                <div class="flower-stage-container" id="flower-box">
+                    <div id="hand-emoji" class="planting-hand">🫳</div>
+                    <svg class="flower-svg" viewBox="0 0 100 120">
+                        <!-- Tierra -->
+                        <line x1="20" y1="110" x2="80" y2="110" class="ground-line" />
+                        
+                        <!-- Semilla: Empieza en y=20 (posición de la mano) -->
+                        <circle id="seed" cx="50" cy="20" r="3" fill="#5c4033" style="opacity: 0;" />
+                        
+                        <!-- Tallo -->
+                        <path id="flower-stem" class="stem" d="M50,110 Q50,110 50,110" />
+                        
+                        <!-- Hojas -->
+                        <path id="leaf-L" class="leaf" d="M50,90 Q30,80 40,70 Q45,80 50,90" />
+                        <path id="leaf-R" class="leaf" d="M50,75 Q70,65 60,55 Q55,65 50,75" />
+                        
+                        <!-- Pétalos -->
+                        <g id="flower-head">
+                            <circle class="petal" cx="50" cy="40" r="12" />
+                            <circle class="petal" cx="35" cy="40" r="10" />
+                            <circle class="petal" cx="65" cy="40" r="10" />
+                            <circle class="petal" cx="50" cy="25" r="10" />
+                            <circle class="petal" cx="50" cy="55" r="10" />
+                            <circle cx="50" cy="40" r="5" fill="#ffd700" class="petal" style="transition-delay: 0.2s" />
+                        </g>
+                    </svg>
+                </div>
             </div>
         </main>
 
@@ -182,6 +290,7 @@
         </footer>
     </div>
 
+    <!-- ESCENA DE LA CARTA -->
     <div id="letter-scene" class="hidden fixed inset-0 z-30 flex items-center justify-center p-4 modal-scene">
         <div class="bg-[#0f0f0f] w-full max-w-lg p-6 md:p-10 rounded-2xl border border-white/5 shadow-2xl fade-in overflow-y-auto max-h-[90vh]">
             <h2 class="font-serif-elegant text-2xl mb-6 text-white border-b border-white/10 pb-4 italic">For my Love....</h2>
@@ -201,8 +310,9 @@
         </div>
     </div>
 
+    <!-- ESCENA DEL VIDEO -->
     <div id="video-scene" class="hidden fixed inset-0 z-40 flex flex-col items-center justify-center bg-black p-4">
-        <div class="video-container mb-6">
+        <div class="w-full max-w-[320px] aspect-[9/16] rounded-xl overflow-hidden shadow-2xl mb-6">
             <iframe id="video-iframe" src="" allow="autoplay; encrypted-media" allowfullscreen class="w-full h-full border-none"></iframe>
         </div>
         <button onclick="hideVideo()" class="px-10 py-3 btn-advance uppercase tracking-[0.3em] text-[9px]">Back</button>
@@ -289,9 +399,8 @@ I love you so much, I like you a lot, I'll always try to have my spark to make y
 
         let currentAudio = null;
         const startDate = new Date(2026, 2, 18);
-        const declarationDate = new Date(2026, 3, 11);
-        const officialDate = new Date(2026, 3, 14);
         const anniversaryDate = new Date(2026, 4, 14);
+        const totalDays = Math.ceil((anniversaryDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
 
         let currentDate = new Date(startDate);
         let dayCount = 1;
@@ -302,8 +411,6 @@ I love you so much, I like you a lot, I'll always try to have my spark to make y
         const btnNext = document.getElementById('btn-next');
         const btnPrev = document.getElementById('btn-prev');
         const btnLetter = document.getElementById('btn-letter');
-        const letterScene = document.getElementById('letter-scene');
-        const videoScene = document.getElementById('video-scene');
         const videoIframe = document.getElementById('video-iframe');
 
         function formatDate(date) {
@@ -318,6 +425,50 @@ I love you so much, I like you a lot, I'll always try to have my spark to make y
                 currentAudio = new Audio(audioUrl);
                 currentAudio.volume = 0.5;
                 currentAudio.play().catch(e => console.log("Blocked:", e));
+            }
+        }
+
+        function updateFlower() {
+            const progress = dayCount / totalDays;
+            const stem = document.getElementById('flower-stem');
+            const leaves = [document.getElementById('leaf-L'), document.getElementById('leaf-R')];
+            const petals = document.querySelectorAll('.petal');
+            const seed = document.getElementById('seed');
+            const hand = document.getElementById('hand-emoji');
+            const head = document.getElementById('flower-head');
+
+            // Día 1: Reiniciar animación de siembra
+            if (dayCount === 1) {
+                hand.style.display = "block";
+                seed.style.opacity = "0";
+                seed.classList.remove('seed-anim');
+                void seed.offsetWidth; // Forzar reflow
+                seed.classList.add('seed-anim');
+                
+                stem.setAttribute('d', "M50,110 Q50,110 50,110");
+                leaves.forEach(l => l.classList.remove('visible'));
+                petals.forEach(p => p.classList.remove('visible'));
+                head.classList.remove('bloom-glow');
+                return;
+            } else {
+                hand.style.display = "none";
+                seed.style.opacity = "0";
+                seed.classList.remove('seed-anim');
+            }
+
+            // Crecimiento normal Día 2+
+            const targetY = 110 - (progress * 70);
+            stem.setAttribute('d', `M50,110 Q50,${110 - (progress * 35)} 50,${targetY}`);
+            
+            if (progress > 0.35) leaves[0].classList.add('visible'); else leaves[0].classList.remove('visible');
+            if (progress > 0.6) leaves[1].classList.add('visible'); else leaves[1].classList.remove('visible');
+            
+            if (dayCount === totalDays) {
+                petals.forEach(p => p.classList.add('visible'));
+                head.classList.add('bloom-glow');
+            } else {
+                petals.forEach(p => p.classList.remove('visible'));
+                head.classList.remove('bloom-glow');
             }
         }
 
@@ -341,28 +492,13 @@ I love you so much, I like you a lot, I'll always try to have my spark to make y
             dayCounter.innerText = `Day ${dayCount} of our history`;
             
             playSoundForDate(dateStr);
+            updateFlower();
 
-            let finalMessage = mensajesPersonalizados[dateStr];
-            if (!finalMessage) {
-                if (currentDate < declarationDate) {
-                    finalMessage = "Every conversation brought us closer. Discovering your world bit by bit.";
-                } else if (currentDate > declarationDate && currentDate < officialDate) {
-                    finalMessage = "Three days of waiting that felt like centuries, but my heart was at peace because it was you.";
-                } else {
-                    finalMessage = "Living our present, building memories every 24 hours.";
-                }
-            }
+            let finalMessage = mensajesPersonalizados[dateStr] || "Living our present, building memories every 24 hours.";
             messageText.innerText = finalMessage;
 
             btnPrev.style.opacity = currentDate > startDate ? "1" : "0";
             btnPrev.style.pointerEvents = currentDate > startDate ? "auto" : "none";
-
-            if (currentDate >= declarationDate) {
-                dateDisplay.classList.add('milestone-glow');
-                spawnHearts(currentDate >= anniversaryDate ? 20 : 8);
-            } else {
-                dateDisplay.classList.remove('milestone-glow');
-            }
 
             if (currentDate >= anniversaryDate) {
                 btnNext.classList.add('hidden');
@@ -377,45 +513,19 @@ I love you so much, I like you a lot, I'll always try to have my spark to make y
 
         function showLetter() {
             document.querySelector('.letter-content').innerText = contenidoCarta;
-            letterScene.classList.remove('hidden');
+            document.getElementById('letter-scene').classList.remove('hidden');
         }
 
-        function hideLetter() {
-            letterScene.classList.add('hidden');
-        }
+        function hideLetter() { document.getElementById('letter-scene').classList.add('hidden'); }
 
         function showVideo() {
-            letterScene.classList.add('hidden');
-            videoScene.classList.remove('hidden');
+            document.getElementById('letter-scene').classList.add('hidden');
+            document.getElementById('video-scene').classList.remove('hidden');
             if (currentAudio) currentAudio.pause();
             videoIframe.src = `https://www.youtube.com/embed/LCGX9-oIfDY?autoplay=1&rel=0&modestbranding=1`;
         }
 
-        function hideVideo() {
-            videoScene.classList.add('hidden');
-            videoIframe.src = ""; 
-        }
-
-        function spawnHearts(count) {
-            const container = document.getElementById('particles-container');
-            for(let i = 0; i < count; i++) {
-                const heart = document.createElement('div');
-                heart.innerHTML = '❤';
-                heart.className = 'heart';
-                heart.style.left = Math.random() * 100 + 'vw';
-                heart.style.top = '100vh';
-                heart.style.fontSize = (Math.random() * 15 + 10) + 'px';
-                heart.style.opacity = Math.random() * 0.3 + 0.1;
-                const dur = Math.random() * 2 + 3;
-                heart.style.transition = `transform ${dur}s linear, opacity ${dur}s ease-out`;
-                container.appendChild(heart);
-                setTimeout(() => {
-                    heart.style.transform = `translateY(-110vh) translateX(${Math.random()*100-50}px) rotate(${Math.random()*360}deg)`;
-                    heart.style.opacity = '0';
-                }, 50);
-                setTimeout(() => heart.remove(), dur * 1000);
-            }
-        }
+        function hideVideo() { document.getElementById('video-scene').classList.add('hidden'); videoIframe.src = ""; }
 
         window.onload = updateUI;
     </script>
