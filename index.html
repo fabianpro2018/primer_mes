@@ -110,7 +110,7 @@
             padding: 0 15px;
         }
 
-        /* --- ESTILOS DE LA FLOR Y SIEMBRA CORREGIDOS --- */
+        /* --- ESTILOS DE LA FLOR Y SIEMBRA --- */
         .flower-stage-container {
             margin-top: 20px;
             height: 140px;
@@ -180,10 +180,9 @@
             100% { transform: translateY(-40px); opacity: 0; }
         }
 
-        /* La semilla ahora cae desde el punto donde está la mano */
         .seed-anim {
             animation: seedFall 1.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
-            animation-delay: 1.2s; /* Empieza cuando la mano está en posición */
+            animation-delay: 1.2s;
         }
 
         @keyframes seedFall {
@@ -202,13 +201,13 @@
         .bloom-glow {
             filter: drop-shadow(0 0 10px var(--flower-color));
         }
-        /* --- FIN ESTILOS FLOR --- */
 
+        /* --- CORAZONES MEJORADOS --- */
         .heart {
             position: absolute;
-            color: rgba(255, 255, 255, 0.15);
             pointer-events: none;
             z-index: 0;
+            text-shadow: 0 0 10px rgba(255, 77, 109, 0.4);
         }
 
         .modal-scene {
@@ -236,24 +235,14 @@
                     ...
                 </p>
 
-                <!-- CONTENEDOR DE LA FLOR -->
                 <div class="flower-stage-container" id="flower-box">
                     <div id="hand-emoji" class="planting-hand">🫳</div>
                     <svg class="flower-svg" viewBox="0 0 100 120">
-                        <!-- Tierra -->
                         <line x1="20" y1="110" x2="80" y2="110" class="ground-line" />
-                        
-                        <!-- Semilla: Empieza en y=20 (posición de la mano) -->
                         <circle id="seed" cx="50" cy="20" r="3" fill="#5c4033" style="opacity: 0;" />
-                        
-                        <!-- Tallo -->
                         <path id="flower-stem" class="stem" d="M50,110 Q50,110 50,110" />
-                        
-                        <!-- Hojas -->
                         <path id="leaf-L" class="leaf" d="M50,90 Q30,80 40,70 Q45,80 50,90" />
                         <path id="leaf-R" class="leaf" d="M50,75 Q70,65 60,55 Q55,65 50,75" />
-                        
-                        <!-- Pétalos -->
                         <g id="flower-head">
                             <circle class="petal" cx="50" cy="40" r="12" />
                             <circle class="petal" cx="35" cy="40" r="10" />
@@ -290,7 +279,6 @@
         </footer>
     </div>
 
-    <!-- ESCENA DE LA CARTA -->
     <div id="letter-scene" class="hidden fixed inset-0 z-30 flex items-center justify-center p-4 modal-scene">
         <div class="bg-[#0f0f0f] w-full max-w-lg p-6 md:p-10 rounded-2xl border border-white/5 shadow-2xl fade-in overflow-y-auto max-h-[90vh]">
             <h2 class="font-serif-elegant text-2xl mb-6 text-white border-b border-white/10 pb-4 italic">For my Love....</h2>
@@ -310,7 +298,6 @@
         </div>
     </div>
 
-    <!-- ESCENA DEL VIDEO -->
     <div id="video-scene" class="hidden fixed inset-0 z-40 flex flex-col items-center justify-center bg-black p-4">
         <div class="w-full max-w-[320px] aspect-[9/16] rounded-xl overflow-hidden shadow-2xl mb-6">
             <iframe id="video-iframe" src="" allow="autoplay; encrypted-media" allowfullscreen class="w-full h-full border-none"></iframe>
@@ -338,7 +325,7 @@
             "April 2": "I've already marked your birthday on my calendar so I don't forget. Happy birthday of the best!",
             "April 3": "Awwwwwwww you remember when it's my birthday, so cute",
             "April 4": "Neymar, Real Madrid, Strawberries, killer whale, seashells, Skye, corean dramas, rice and macaroni and other stuff motorcycles, watermelon, tayo tayo, etc. \n I'll try to remember the things you like, it's difficult because my memory doesn't always work :(",
-            "April 5": "Messi, Barcelona, ​​American people, ketchup, tomato, banana, butterfly, avocado, mustard, etc. \n I'll try to remember the things you don't like, it's difficult because my memory doesn't always work :(",
+            "April 5": "Messi, Barcelona, ​​American people, ketchup, tomato, banana, butterfly, avocado, mysql, mustard, etc. \n I'll try to remember the things you don't like, it's difficult because my memory doesn't always work :(",
             "April 6": "I'm going to have to be my sister's chef; I need to learn new recipes. Thanks for teaching me how to make your salad.",
             "April 7": "I have something to tell you, but I don't know when, whether in a few days, weeks, months, or a year.",
             "April 8": "I'm excited and afraid to share this with you. Choose a day",
@@ -382,8 +369,6 @@
 
         const contenidoCarta = `It seems incredible that today marks our first official month together. I look back to that March 18th when it all began as an improbable event, a true Black Swan that completely changed my world.
 
-I already told you that you're my Black Swan, but there's another word that also describes you: you're my "serendipia" Meeting you was a lucky, precious, and unexpected event.
-
 Everything is fun with you, from our games on Arena Breakout to those karaoke nights where your ears suffer. I love how patiently you've been my English teacher, making every new word an excuse to admire you a little more.
 
 Thank you for accepting me. The 14th was the moment my reality became more beautiful than any dream. Thank you for letting me be a part of your story, for every "Hm" that lights up my screen, and for being my safe haven.
@@ -399,6 +384,7 @@ I love you so much, I like you a lot, I'll always try to have my spark to make y
 
         let currentAudio = null;
         const startDate = new Date(2026, 2, 18);
+        const declarationDate = new Date(2026, 3, 11);
         const anniversaryDate = new Date(2026, 4, 14);
         const totalDays = Math.ceil((anniversaryDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
 
@@ -437,14 +423,12 @@ I love you so much, I like you a lot, I'll always try to have my spark to make y
             const hand = document.getElementById('hand-emoji');
             const head = document.getElementById('flower-head');
 
-            // Día 1: Reiniciar animación de siembra
             if (dayCount === 1) {
                 hand.style.display = "block";
                 seed.style.opacity = "0";
                 seed.classList.remove('seed-anim');
-                void seed.offsetWidth; // Forzar reflow
+                void seed.offsetWidth;
                 seed.classList.add('seed-anim');
-                
                 stem.setAttribute('d', "M50,110 Q50,110 50,110");
                 leaves.forEach(l => l.classList.remove('visible'));
                 petals.forEach(p => p.classList.remove('visible'));
@@ -456,13 +440,10 @@ I love you so much, I like you a lot, I'll always try to have my spark to make y
                 seed.classList.remove('seed-anim');
             }
 
-            // Crecimiento normal Día 2+
             const targetY = 110 - (progress * 70);
             stem.setAttribute('d', `M50,110 Q50,${110 - (progress * 35)} 50,${targetY}`);
-            
             if (progress > 0.35) leaves[0].classList.add('visible'); else leaves[0].classList.remove('visible');
             if (progress > 0.6) leaves[1].classList.add('visible'); else leaves[1].classList.remove('visible');
-            
             if (dayCount === totalDays) {
                 petals.forEach(p => p.classList.add('visible'));
                 head.classList.add('bloom-glow');
@@ -500,6 +481,14 @@ I love you so much, I like you a lot, I'll always try to have my spark to make y
             btnPrev.style.opacity = currentDate > startDate ? "1" : "0";
             btnPrev.style.pointerEvents = currentDate > startDate ? "auto" : "none";
 
+            if (currentDate >= declarationDate) {
+                dateDisplay.classList.add('milestone-glow');
+                // Se disparan corazones más notorios
+                spawnHearts(currentDate >= anniversaryDate ? 30 : 12);
+            } else {
+                dateDisplay.classList.remove('milestone-glow');
+            }
+
             if (currentDate >= anniversaryDate) {
                 btnNext.classList.add('hidden');
                 btnLetter.classList.remove('hidden');
@@ -526,6 +515,38 @@ I love you so much, I like you a lot, I'll always try to have my spark to make y
         }
 
         function hideVideo() { document.getElementById('video-scene').classList.add('hidden'); videoIframe.src = ""; }
+
+        function spawnHearts(count) {
+            const container = document.getElementById('particles-container');
+            for(let i = 0; i < count; i++) {
+                const heart = document.createElement('div');
+                heart.innerHTML = '❤';
+                heart.className = 'heart';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.top = '100vh';
+                
+                // Tamaño un poco más variado y grande
+                const size = (Math.random() * 18 + 14);
+                heart.style.fontSize = size + 'px';
+                
+                // Color más sólido (blanco-rosado) y opacidad alta
+                const colorType = Math.random() > 0.5 ? 'rgba(255, 255, 255, 0.7)' : 'rgba(255, 182, 193, 0.7)';
+                heart.style.color = colorType;
+                
+                const dur = Math.random() * 2 + 3.5;
+                heart.style.transition = `transform ${dur}s linear, opacity ${dur}s ease-out`;
+                
+                container.appendChild(heart);
+                
+                // Pequeño delay para asegurar que el navegador registre el cambio
+                setTimeout(() => {
+                    heart.style.transform = `translateY(-115vh) translateX(${Math.random()*120-60}px) rotate(${Math.random()*360}deg)`;
+                    heart.style.opacity = '0';
+                }, 50);
+                
+                setTimeout(() => heart.remove(), dur * 1000);
+            }
+        }
 
         window.onload = updateUI;
     </script>
